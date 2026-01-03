@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #0a0a0a;
+  color: white;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  10%, 30%, 50%, 70%, 90% { transform: translate(-2px, -2px); }
+  20%, 40%, 60%, 80% { transform: translate(2px, 2px); }
+}
+
