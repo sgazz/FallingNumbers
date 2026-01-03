@@ -1,13 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Use static export only for local builds
-  // Vercel will use normal Next.js build automatically
-  ...(process.env.VERCEL || process.env.CI ? {} : { output: 'export' }),
+  // Remove output: 'export' by default to allow Vercel to use normal Next.js build
+  // For local static export, use: npm run export (which sets STATIC_EXPORT=true)
+  ...(process.env.STATIC_EXPORT === 'true' ? { output: 'export' } : {}),
   images: {
     unoptimized: true,
   },
-  // Ensure trailing slash for static export compatibility
-  trailingSlash: true,
 }
 
 module.exports = nextConfig
