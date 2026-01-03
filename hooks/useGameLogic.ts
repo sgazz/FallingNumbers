@@ -63,10 +63,21 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
   const [level, setLevel] = useState(1); // Current level
   const [combinationsCleared, setCombinationsCleared] = useState(0); // Combinations cleared in current level
   const [justLeveledUp, setJustLeveledUp] = useState(false); // Flag for level up animation
+  const levelRef = useRef(1); // Ref to track current level for synchronous access
+  const combinationsClearedRef = useRef(0); // Ref to track combinations cleared for synchronous access
   const initialized = useRef(false);
   const targetSumInitialized = useRef(false);
   const lastComboTime = useRef<number | null>(null);
   const comboTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Keep refs in sync with state
+  useEffect(() => {
+    levelRef.current = level;
+  }, [level]);
+  
+  useEffect(() => {
+    combinationsClearedRef.current = combinationsCleared;
+  }, [combinationsCleared]);
 
   const checkGameOver = useCallback(
     (currentGrid: (number | null)[][]): boolean => {
@@ -458,31 +469,37 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
         setScore((prev) => prev + totalScore);
         
         // Level system - track combinations cleared
-        setCombinationsCleared((prev) => {
-          const newCount = prev + 1; // Each cleared combination counts as 1
-          const combinationsPerLevel = 10;
-          
-          if (newCount >= combinationsPerLevel) {
-            // Level up!
-            setLevel((currentLevel) => {
-              const newLevel = currentLevel + 1;
-              // Bonus points for level completion
-              const levelBonus = newLevel * 50;
-              setScore((prevScore) => prevScore + levelBonus);
-              setJustLeveledUp(true);
-              // Reset after animation
-              setTimeout(() => setJustLeveledUp(false), 2000);
-              return newLevel;
-            });
-            return 0; // Reset for next level
-          }
-          
-          return newCount;
-        });
+        // Use ref to avoid race conditions with multiple rapid calls
+        const currentCleared = combinationsClearedRef.current;
+        const newCount = currentCleared + 1;
+        const combinationsPerLevel = 10;
+        let leveledUp = false;
         
-        // Generate new target sum based on level
-        const minTarget = level <= 3 ? 5 : level <= 6 ? 8 : level <= 10 ? 10 : 12;
-        const maxTarget = level <= 3 ? 15 : level <= 6 ? 18 : level <= 10 ? 20 : 22;
+        if (newCount >= combinationsPerLevel) {
+          // Level up!
+          const currentLevel = levelRef.current;
+          const newLevel = currentLevel + 1;
+          levelRef.current = newLevel; // Update ref immediately
+          combinationsClearedRef.current = 0; // Reset ref
+          leveledUp = true;
+          
+          setLevel(newLevel);
+          setCombinationsCleared(0); // Reset for next level
+          // Bonus points for level completion
+          const levelBonus = newLevel * 50;
+          setScore((prevScore) => prevScore + levelBonus);
+          setJustLeveledUp(true);
+          // Reset after animation
+          setTimeout(() => setJustLeveledUp(false), 2000);
+        } else {
+          combinationsClearedRef.current = newCount; // Update ref
+          setCombinationsCleared(newCount);
+        }
+        
+        // Generate new target sum based on current level
+        const currentLevel = leveledUp ? levelRef.current : level;
+        const minTarget = currentLevel <= 3 ? 5 : currentLevel <= 6 ? 8 : currentLevel <= 10 ? 10 : 12;
+        const maxTarget = currentLevel <= 3 ? 15 : currentLevel <= 6 ? 18 : currentLevel <= 10 ? 20 : 22;
         setTargetSum(Math.floor(Math.random() * (maxTarget - minTarget + 1)) + minTarget);
       }
 
@@ -521,18 +538,16 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
       // Place the piece
       const newGrid = placePiece(currentPiece, currentPosition, grid);
       if (newGrid) {
-        // Check all positions in the piece for clearing
-        const placedPositions = currentPiece.positions.map(relPos => ({
-          x: currentPosition.x + relPos.x,
-          y: currentPosition.y + relPos.y,
-        }));
+        // Check clearing - only call once with the first valid position
+        // checkAndClearLines already searches all adjacent cells, so we don't need to call it multiple times
+        const firstPosition = {
+          x: currentPosition.x + currentPiece.positions[0].x,
+          y: currentPosition.y + currentPiece.positions[0].y,
+        };
         
-        // Check clearing for each placed position
         let clearedGrid = newGrid;
-        for (const pos of placedPositions) {
-          if (pos.y >= 0 && pos.y < gridHeight && pos.x >= 0 && pos.x < gridWidth) {
-            clearedGrid = checkAndClearLines(clearedGrid, pos);
-          }
+        if (firstPosition.y >= 0 && firstPosition.y < gridHeight && firstPosition.x >= 0 && firstPosition.x < gridWidth) {
+          clearedGrid = checkAndClearLines(clearedGrid, firstPosition);
         }
         
         setGrid(clearedGrid);
@@ -559,18 +574,16 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
     // Place the piece
     const newGrid = placePiece(currentPiece, newPos, grid);
     if (newGrid) {
-      // Check all positions in the piece for clearing
-      const placedPositions = currentPiece.positions.map(relPos => ({
-        x: newPos.x + relPos.x,
-        y: newPos.y + relPos.y,
-      }));
+      // Check clearing - only call once with the first valid position
+      // checkAndClearLines already searches all adjacent cells, so we don't need to call it multiple times
+      const firstPosition = {
+        x: newPos.x + currentPiece.positions[0].x,
+        y: newPos.y + currentPiece.positions[0].y,
+      };
       
-      // Check clearing for each placed position
       let clearedGrid = newGrid;
-      for (const pos of placedPositions) {
-        if (pos.y >= 0 && pos.y < gridHeight && pos.x >= 0 && pos.x < gridWidth) {
-          clearedGrid = checkAndClearLines(clearedGrid, pos);
-        }
+      if (firstPosition.y >= 0 && firstPosition.y < gridHeight && firstPosition.x >= 0 && firstPosition.x < gridWidth) {
+        clearedGrid = checkAndClearLines(clearedGrid, firstPosition);
       }
       
       setGrid(clearedGrid);
@@ -603,7 +616,9 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
     setLastClearedPositions([]);
     setLastClearedCount(0);
     setLevel(1);
+    levelRef.current = 1; // Reset ref as well
     setCombinationsCleared(0);
+    combinationsClearedRef.current = 0; // Reset ref as well
     setJustLeveledUp(false);
     lastComboTime.current = null;
     if (comboTimeoutRef.current) {

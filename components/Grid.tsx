@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Box, Text } from '@react-three/drei';
+import { Box, Text, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface GridProps {
@@ -14,7 +14,7 @@ export default function Grid({ grid, width, height }: GridProps) {
   const cells = useMemo(() => {
     const cellsArray: JSX.Element[] = [];
     
-    // Main board background
+    // Main board background - Dark blue-gray as shown in image
     const boardWidth = width;
     const boardHeight = height;
     cellsArray.push(
@@ -28,7 +28,7 @@ export default function Grid({ grid, width, height }: GridProps) {
           metalness={0.2}
           roughness={0.6}
           emissive="#1a2332"
-          emissiveIntensity={0.2}
+          emissiveIntensity={0.15}
         />
       </Box>
     );
@@ -40,7 +40,7 @@ export default function Grid({ grid, width, height }: GridProps) {
         const cellZ = y - height / 2 + 0.5;
         const isEven = (x + y) % 2 === 0;
         
-        // Grid cell background with checkerboard pattern
+        // Grid cell background with subtle checkerboard pattern - matching image
         cellsArray.push(
           <Box
             key={`cell-${x}-${y}`}
@@ -48,60 +48,82 @@ export default function Grid({ grid, width, height }: GridProps) {
             args={[0.95, 0.08, 0.95]}
           >
             <meshStandardMaterial
-              color={number 
-                ? '#3d4758' // Lighter when occupied
-                : isEven 
-                  ? '#3a4451' // Lighter blue-gray for even cells
-                  : '#2e384b' // Lighter for odd cells
+              color={isEven 
+                ? '#3a4451' // Lighter blue-gray for even cells
+                : '#2e384b' // Darker blue-gray for odd cells
               }
-              metalness={number ? 0.3 : 0.15}
+              metalness={0.15}
               roughness={0.5}
-              emissive={number ? '#2a3441' : '#1a2332'}
-              emissiveIntensity={number ? 0.3 : 0.15}
+              emissive={isEven ? '#2a3441' : '#1a2332'}
+              emissiveIntensity={0.15}
             />
           </Box>
         );
 
-        // Grid cell border
-        cellsArray.push(
-          <Box
-            key={`border-${x}-${y}`}
-            position={[cellX, 0.04, cellZ]}
-            args={[1, 0.01, 1]}
-          >
-            <meshStandardMaterial
-              color="#0f172a"
-              opacity={0.3}
-              transparent
-            />
-          </Box>
-        );
-
-        // Number display
+        // Number display - Glossy 3D blocks with rounded edges
         if (number !== null) {
+          // Color based on number value (green, red/orange, blue)
+          const getBlockColor = (num: number) => {
+            if (num <= 3) return { main: '#10b981', emissive: '#059669', shadow: '#047857' }; // Green
+            if (num <= 6) return { main: '#ef4444', emissive: '#dc2626', shadow: '#b91c1c' }; // Red
+            return { main: '#3b82f6', emissive: '#2563eb', shadow: '#1e40af' }; // Blue
+          };
+          
+          const colors = getBlockColor(number);
+          
           cellsArray.push(
             <group 
               key={`number-${x}-${y}`} 
-              position={[cellX, 0.1, cellZ]}
+              position={[cellX, 0.15, cellZ]}
               rotation={[-Math.PI / 2, 0, 0]}
             >
-              <Box args={[0.8, 0.8, 0.2]}>
+              {/* Main glossy block with rounded edges */}
+              <RoundedBox args={[0.85, 0.85, 0.25]} radius={0.08} smoothness={4}>
                 <meshStandardMaterial 
-                  color="#3b82f6"
-                  metalness={0.6}
-                  roughness={0.3}
-                  emissive="#1e40af"
-                  emissiveIntensity={0.2}
+                  color={colors.main}
+                  metalness={0.8}
+                  roughness={0.1}
+                  emissive={colors.emissive}
+                  emissiveIntensity={0.3}
+                />
+              </RoundedBox>
+              
+              {/* Top highlight for glossy effect */}
+              <Box 
+                args={[0.7, 0.7, 0.01]} 
+                position={[0, 0, 0.13]}
+              >
+                <meshStandardMaterial 
+                  color="#ffffff"
+                  opacity={0.4}
+                  transparent
+                  roughness={0.1}
+                  metalness={0.9}
                 />
               </Box>
+              
+              {/* Shadow/Depth effect */}
+              <Box 
+                args={[0.88, 0.88, 0.02]} 
+                position={[0, 0, -0.12]}
+              >
+                <meshStandardMaterial 
+                  color={colors.shadow}
+                  opacity={0.6}
+                  transparent
+                />
+              </Box>
+              
+              {/* Number text with better styling */}
               <Text
-                position={[0, 0, 0.11]}
-                fontSize={0.5}
+                position={[0, 0, 0.14]}
+                fontSize={0.6}
                 color="#ffffff"
                 anchorX="center"
                 anchorY="middle"
-                outlineWidth={0.02}
+                outlineWidth={0.03}
                 outlineColor="#000000"
+                fontWeight="bold"
               >
                 {number}
               </Text>
