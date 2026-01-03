@@ -112,7 +112,8 @@ export default function ParticleExplosion({
     if (sizes) {
       meshRef.current.geometry.attributes.size!.needsUpdate = true;
     }
-    meshRef.current.material.opacity = maxOpacity;
+    const material = meshRef.current.material as THREE.PointsMaterial;
+    material.opacity = maxOpacity;
   });
 
   const geometry = useMemo(() => {

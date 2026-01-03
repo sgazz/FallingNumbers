@@ -36,6 +36,32 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Build
 
+### Static Export (Standalone - No Server Required)
+
+The game can be built as a standalone static website that runs without a server:
+
+```bash
+npm run build
+```
+
+This creates an `out` folder with all static files. You can:
+
+1. **Open directly in browser**: Navigate to the `out` folder and open `index.html` in your browser
+2. **Serve with any static file server**: 
+   ```bash
+   # Using Python
+   cd out && python -m http.server 8000
+   
+   # Using Node.js (http-server)
+   npx http-server out -p 8000
+   
+   # Using PHP
+   cd out && php -S localhost:8000
+   ```
+3. **Deploy to any static hosting**: Upload the `out` folder to GitHub Pages, Netlify, Vercel, or any static hosting service
+
+### Production Build (With Server)
+
 ```bash
 npm run build
 npm start
