@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next build"
+    "export": "STATIC_EXPORT=true next build"
   },
   "dependencies": {
     "react": "^18.3.1",
