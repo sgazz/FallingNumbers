@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 
 export interface Position {
   x: number;
@@ -60,6 +60,9 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
   const [comboMultiplier, setComboMultiplier] = useState(1); // Current multiplier (1x, 2x, 3x...)
   const [lastClearedPositions, setLastClearedPositions] = useState<Position[]>([]); // For particle effects
   const [lastClearedCount, setLastClearedCount] = useState(0); // Number of cleared cells for particle color
+  const [level, setLevel] = useState(1); // Current level
+  const [combinationsCleared, setCombinationsCleared] = useState(0); // Combinations cleared in current level
+  const [justLeveledUp, setJustLeveledUp] = useState(false); // Flag for level up animation
   const initialized = useRef(false);
   const targetSumInitialized = useRef(false);
   const lastComboTime = useRef<number | null>(null);
@@ -453,8 +456,34 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
         const totalScore = baseScore + comboBonus;
         
         setScore((prev) => prev + totalScore);
-        // Generate new target sum
-        setTargetSum(Math.floor(Math.random() * 16) + 5);
+        
+        // Level system - track combinations cleared
+        setCombinationsCleared((prev) => {
+          const newCount = prev + 1; // Each cleared combination counts as 1
+          const combinationsPerLevel = 10;
+          
+          if (newCount >= combinationsPerLevel) {
+            // Level up!
+            setLevel((currentLevel) => {
+              const newLevel = currentLevel + 1;
+              // Bonus points for level completion
+              const levelBonus = newLevel * 50;
+              setScore((prevScore) => prevScore + levelBonus);
+              setJustLeveledUp(true);
+              // Reset after animation
+              setTimeout(() => setJustLeveledUp(false), 2000);
+              return newLevel;
+            });
+            return 0; // Reset for next level
+          }
+          
+          return newCount;
+        });
+        
+        // Generate new target sum based on level
+        const minTarget = level <= 3 ? 5 : level <= 6 ? 8 : level <= 10 ? 10 : 12;
+        const maxTarget = level <= 3 ? 15 : level <= 6 ? 18 : level <= 10 ? 20 : 22;
+        setTargetSum(Math.floor(Math.random() * (maxTarget - minTarget + 1)) + minTarget);
       }
 
       return updatedGrid;
@@ -556,6 +585,11 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
     }
   }, [currentPiece, currentPosition, canMovePiece, gameOver, isPaused, placePiece, grid, checkAndClearLines, spawnNewNumber, checkGameOver, gridHeight, gridWidth]);
 
+  // Calculate fall speed based on level (0.8s at level 1, decreasing by 0.05s per level, min 0.1s)
+  const fallSpeed = useMemo(() => {
+    return Math.max(0.1, 0.8 - (level - 1) * 0.05);
+  }, [level]);
+
   const resetGame = useCallback(() => {
     setGrid(Array(gridHeight).fill(null).map(() => Array(gridWidth).fill(null)));
     setCurrentPiece(null);
@@ -568,6 +602,9 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
     setComboMultiplier(1);
     setLastClearedPositions([]);
     setLastClearedCount(0);
+    setLevel(1);
+    setCombinationsCleared(0);
+    setJustLeveledUp(false);
     lastComboTime.current = null;
     if (comboTimeoutRef.current) {
       clearTimeout(comboTimeoutRef.current);
@@ -589,6 +626,10 @@ export function useGameLogic(gridWidth: number, gridHeight: number) {
     comboMultiplier,
     lastClearedPositions, // For particle effects
     lastClearedCount, // For particle color
+    level,
+    combinationsCleared,
+    justLeveledUp,
+    fallSpeed,
     moveLeft,
     moveRight,
     moveDown,

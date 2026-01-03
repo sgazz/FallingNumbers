@@ -16,6 +16,10 @@ interface GameContextType {
   comboMultiplier: number;
   lastClearedPositions: { x: number; y: number }[];
   lastClearedCount: number;
+  level: number;
+  combinationsCleared: number;
+  justLeveledUp: boolean;
+  fallSpeed: number;
   moveLeft: () => void;
   moveRight: () => void;
   moveDown: () => void;

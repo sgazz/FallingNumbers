@@ -21,6 +21,7 @@ export default function Game() {
     lastClearedPositions,
     lastClearedCount,
     comboMultiplier,
+    fallSpeed,
     moveLeft,
     moveRight,
     moveDown,
@@ -71,13 +72,13 @@ export default function Game() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [moveLeft, moveRight, moveDown, drop, gameOver, resetGame, togglePause]);
 
-  // Auto fall
+  // Auto fall with dynamic speed based on level
   const fallTimerRef = useRef(0);
   useFrame((state, delta) => {
     if (gameOver || !currentPiece || isPaused) return;
 
     fallTimerRef.current += delta;
-    if (fallTimerRef.current >= 0.8) {
+    if (fallTimerRef.current >= fallSpeed) {
       moveDown();
       fallTimerRef.current = 0;
     }

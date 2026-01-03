@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useGameContext } from '@/contexts/GameContext';
 
 export default function GameUI() {
-  const { score, targetSum, gameOver, isPaused, comboCount, comboMultiplier, lastClearedPositions, resetGame, togglePause } = useGameContext();
+  const { score, targetSum, gameOver, isPaused, comboCount, comboMultiplier, lastClearedPositions, level, combinationsCleared, justLeveledUp, resetGame, togglePause } = useGameContext();
   const containerRef = useRef<HTMLDivElement>(null);
   const prevClearedCount = useRef(0);
 
@@ -51,6 +51,21 @@ export default function GameUI() {
             <div className="text-white text-4xl font-bold drop-shadow-lg">{targetSum}</div>
           </div>
           
+          {/* Level Indicator */}
+          <div className="bg-gradient-to-br from-green-600/90 to-emerald-600/90 backdrop-blur-md p-5 rounded-2xl shadow-2xl border border-white/20">
+            <div className="text-white/80 text-xs uppercase tracking-wider mb-1">Level</div>
+            <div className="text-white text-4xl font-bold drop-shadow-lg mb-2">{level}</div>
+            <div className="w-full bg-black/30 rounded-full h-2 mb-1">
+              <div 
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(combinationsCleared / 10) * 100}%` }}
+              />
+            </div>
+            <div className="text-white/70 text-xs">
+              {combinationsCleared}/10 to next level
+            </div>
+          </div>
+          
           {/* Combo Indicator */}
           {comboCount > 0 && (
             <div className="bg-gradient-to-br from-yellow-500/90 to-orange-500/90 backdrop-blur-md p-5 rounded-2xl shadow-2xl border border-white/20 animate-pulse">
@@ -64,6 +79,22 @@ export default function GameUI() {
             </div>
           )}
         </div>
+        
+        {/* Level Up Notification */}
+        {justLeveledUp && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="bg-gradient-to-br from-yellow-400/95 to-orange-500/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20 animate-bounce">
+              <div className="text-center">
+                <div className="text-6xl font-bold mb-2 text-white drop-shadow-2xl">
+                  LEVEL UP!
+                </div>
+                <div className="text-white text-3xl font-bold">
+                  Level {level}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Pause Modal */}
         {isPaused && !gameOver && (
