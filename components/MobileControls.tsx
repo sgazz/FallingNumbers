@@ -22,12 +22,23 @@ export default function MobileControls() {
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
 
-  // Detect mobile device
+  // Detect mobile device (including tablets like iPad)
   useEffect(() => {
     const checkMobile = () => {
-      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      // Check user agent for mobile/tablet devices
+      const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
-      ) || window.innerWidth < 768;
+      );
+      
+      // Check for touch support (tablets have touch)
+      const hasTouchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      
+      // Check viewport width (iPad is 768px or 1024px)
+      const isSmallViewport = window.innerWidth < 1024;
+      
+      // Consider it mobile if: mobile user agent OR (has touch AND small viewport)
+      const isMobileDevice = isMobileUserAgent || (hasTouchSupport && isSmallViewport);
+      
       setIsMobile(isMobileDevice);
     };
 
@@ -156,7 +167,7 @@ export default function MobileControls() {
   };
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto md:hidden" style={{ marginBottom: 'env(safe-area-inset-bottom, 0)' }}>
+    <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto lg:hidden" style={{ marginBottom: 'env(safe-area-inset-bottom, 0)' }}>
       {/* On-screen controls - Compact horizontal layout */}
       <div className="flex items-center justify-center gap-2 p-3 pb-4">
         {/* Left button */}

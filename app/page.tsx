@@ -13,10 +13,10 @@ function ResponsiveOrbitControls() {
   useEffect(() => {
     const updateZoom = () => {
       const width = window.innerWidth;
-      if (width < 640) {
-        setZoomConfig({ min: 12, max: 25 }); // Mobile
+      if (width < 1024) {
+        setZoomConfig({ min: 12, max: 25 }); // Mobile/Tablet
       } else {
-        setZoomConfig({ min: 15, max: 30 }); // Desktop/Tablet
+        setZoomConfig({ min: 15, max: 30 }); // Desktop
       }
     };
 
@@ -43,11 +43,9 @@ export default function Home() {
   useEffect(() => {
     const updateCamera = () => {
       const width = window.innerWidth;
-      if (width < 640) {
-        // Mobile: Higher camera position and wider FOV to see more of the board
-        setCameraConfig({ position: [0, 19, 0] as [number, number, number], fov: 58 }); // Mobile
-      } else if (width < 1024) {
-        setCameraConfig({ position: [0, 19, 0] as [number, number, number], fov: 52 }); // Tablet
+      if (width < 1024) {
+        // Mobile/Tablet: Higher camera position and wider FOV to see more of the board
+        setCameraConfig({ position: [0, 19, 0] as [number, number, number], fov: 58 }); // Mobile/Tablet
       } else {
         setCameraConfig({ position: [0, 20, 0] as [number, number, number], fov: 50 }); // Desktop
       }
@@ -64,11 +62,11 @@ export default function Home() {
         <Canvas
           camera={{ position: cameraConfig.position, fov: cameraConfig.fov }}
           gl={{ 
-            antialias: typeof window !== 'undefined' && window.innerWidth >= 768, // Disable antialiasing on mobile for better performance
+            antialias: typeof window !== 'undefined' && window.innerWidth >= 1024, // Disable antialiasing on mobile/tablet for better performance
             powerPreference: 'high-performance',
           }}
-          dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [1, 1.5] : [1, 2]} // Lower DPR on mobile
-          style={{ paddingBottom: typeof window !== 'undefined' && window.innerWidth < 768 ? '100px' : '0' }} // Add padding on mobile to make room for controls below board
+          dpr={typeof window !== 'undefined' && window.innerWidth < 1024 ? [1, 1.5] : [1, 2]} // Lower DPR on mobile/tablet
+          style={{ paddingBottom: typeof window !== 'undefined' && window.innerWidth < 1024 ? '100px' : '0' }} // Add padding on mobile/tablet to make room for controls below board
         >
           {/* Enhanced lighting for glossy blocks */}
           <ambientLight intensity={1.5} />

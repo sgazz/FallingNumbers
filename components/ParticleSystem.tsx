@@ -4,12 +4,15 @@ import { useState, useEffect, useRef } from 'react';
 import ParticleExplosion from './ParticleExplosion';
 import PulseEffect from './PulseEffect';
 
-// Detect mobile device for performance optimization
+// Detect mobile device for performance optimization (including tablets)
 const isMobileDevice = () => {
   if (typeof window === 'undefined') return false;
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+  const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
     navigator.userAgent
-  ) || window.innerWidth < 768;
+  );
+  const hasTouchSupport = 'ontouchstart' in window || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+  const isSmallViewport = window.innerWidth < 1024;
+  return isMobileUserAgent || (hasTouchSupport && isSmallViewport);
 };
 
 interface ParticleEvent {
