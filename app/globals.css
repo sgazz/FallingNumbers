@@ -8,6 +8,13 @@ body {
   overflow: hidden;
   background: #0a0a0a;
   color: white;
+  /* Optimize touch handling for mobile */
+  touch-action: pan-y pan-x;
+  /* Prevent text selection on mobile */
+  -webkit-user-select: none;
+  user-select: none;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior: none;
 }
 
 @keyframes shake {

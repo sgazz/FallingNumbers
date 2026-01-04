@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useGameContext } from '@/contexts/GameContext';
+import MobileControls from './MobileControls';
 
 export default function GameUI() {
   const { score, targetSum, gameOver, isPaused, comboCount, comboMultiplier, lastClearedPositions, level, combinationsCleared, justLeveledUp, currentPiece, resetGame, togglePause } = useGameContext();
@@ -193,8 +194,8 @@ export default function GameUI() {
         </div>
       )}
       
-      {/* Controls Help - Modern Glassmorphism Card - Responsive */}
-      <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-white/20 shadow-2xl" style={{ boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)' }}>
+      {/* Controls Help - Modern Glassmorphism Card - Responsive (Desktop only) */}
+      <div className="hidden md:block absolute bottom-2 left-2 sm:bottom-4 sm:left-4 bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-xl p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-white/20 shadow-2xl" style={{ boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)' }}>
         <div className="text-white/90">
           <div className="font-bold mb-2 sm:mb-3 text-white text-xs sm:text-sm uppercase tracking-wider">Controls</div>
           <div className="space-y-1.5 sm:space-y-2 text-white/80 text-[10px] sm:text-xs">
@@ -220,6 +221,9 @@ export default function GameUI() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Controls */}
+      <MobileControls />
     </div>
   );
 }

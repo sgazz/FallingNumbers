@@ -62,7 +62,11 @@ export default function Home() {
       <div className="w-screen h-screen relative">
         <Canvas
           camera={{ position: cameraConfig.position, fov: cameraConfig.fov }}
-          gl={{ antialias: true }}
+          gl={{ 
+            antialias: typeof window !== 'undefined' && window.innerWidth >= 768, // Disable antialiasing on mobile for better performance
+            powerPreference: 'high-performance',
+          }}
+          dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [1, 1.5] : [1, 2]} // Lower DPR on mobile
         >
           {/* Enhanced lighting for glossy blocks */}
           <ambientLight intensity={1.5} />

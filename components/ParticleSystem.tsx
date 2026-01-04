@@ -4,6 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import ParticleExplosion from './ParticleExplosion';
 import PulseEffect from './PulseEffect';
 
+// Detect mobile device for performance optimization
+const isMobileDevice = () => {
+  if (typeof window === 'undefined') return false;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  ) || window.innerWidth < 768;
+};
+
 interface ParticleEvent {
   id: string;
   position: [number, number, number];
@@ -55,24 +63,28 @@ export default function ParticleSystem({
         const worldZ = pos.y - gridHeight / 2 + 0.5;
 
         // Determine particle color and count based on combo and cleared count
+        // Reduce particle count on mobile for better performance
+        const isMobile = isMobileDevice();
+        const mobileMultiplier = isMobile ? 0.5 : 1; // Reduce particles by 50% on mobile
+        
         let particleColor = '#60a5fa'; // Default blue
-        let particleCount = 40 + Math.floor(Math.random() * 30); // More particles
+        let particleCount = Math.floor((40 + Math.floor(Math.random() * 30)) * mobileMultiplier);
         
         if (comboMultiplier >= 4) {
           particleColor = '#fbbf24'; // Bright yellow for very high combo
-          particleCount = 80 + Math.floor(Math.random() * 40);
+          particleCount = Math.floor((80 + Math.floor(Math.random() * 40)) * mobileMultiplier);
         } else if (comboMultiplier >= 3) {
           particleColor = '#f59e0b'; // Orange for high combo
-          particleCount = 60 + Math.floor(Math.random() * 30);
+          particleCount = Math.floor((60 + Math.floor(Math.random() * 30)) * mobileMultiplier);
         } else if (clearedCount >= 7) {
           particleColor = '#ef4444'; // Red for very large combinations
-          particleCount = 70 + Math.floor(Math.random() * 30);
+          particleCount = Math.floor((70 + Math.floor(Math.random() * 30)) * mobileMultiplier);
         } else if (clearedCount >= 5) {
           particleColor = '#f87171'; // Light red for large combinations
-          particleCount = 50 + Math.floor(Math.random() * 25);
+          particleCount = Math.floor((50 + Math.floor(Math.random() * 25)) * mobileMultiplier);
         } else if (comboMultiplier >= 2) {
           particleColor = '#a855f7'; // Purple for combo
-          particleCount = 45 + Math.floor(Math.random() * 20);
+          particleCount = Math.floor((45 + Math.floor(Math.random() * 20)) * mobileMultiplier);
         }
 
         newParticles.push({
