@@ -44,7 +44,8 @@ export default function Home() {
     const updateCamera = () => {
       const width = window.innerWidth;
       if (width < 640) {
-        setCameraConfig({ position: [0, 18, 0] as [number, number, number], fov: 55 }); // Mobile
+        // Mobile: Higher camera position and wider FOV to see more of the board
+        setCameraConfig({ position: [0, 19, 0] as [number, number, number], fov: 58 }); // Mobile
       } else if (width < 1024) {
         setCameraConfig({ position: [0, 19, 0] as [number, number, number], fov: 52 }); // Tablet
       } else {
@@ -67,6 +68,7 @@ export default function Home() {
             powerPreference: 'high-performance',
           }}
           dpr={typeof window !== 'undefined' && window.innerWidth < 768 ? [1, 1.5] : [1, 2]} // Lower DPR on mobile
+          style={{ paddingBottom: typeof window !== 'undefined' && window.innerWidth < 768 ? '100px' : '0' }} // Add padding on mobile to make room for controls below board
         >
           {/* Enhanced lighting for glossy blocks */}
           <ambientLight intensity={1.5} />

@@ -156,20 +156,20 @@ export default function MobileControls() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-auto md:hidden">
-      {/* On-screen controls */}
-      <div className="flex items-center justify-center gap-3 sm:gap-4 p-4 sm:p-6 pb-8 sm:pb-10">
+    <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-auto md:hidden" style={{ marginBottom: 'env(safe-area-inset-bottom, 0)' }}>
+      {/* On-screen controls - Compact horizontal layout */}
+      <div className="flex items-center justify-center gap-2 p-3 pb-4">
         {/* Left button */}
         <button
           onTouchStart={(e) => {
             e.preventDefault();
             handleButtonPress(moveLeft);
           }}
-          className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600/90 via-indigo-600/90 to-purple-600/90 backdrop-blur-xl rounded-2xl shadow-2xl border-2 border-white/20 active:scale-95 transition-transform duration-100 flex items-center justify-center"
-          style={{ boxShadow: '0 8px 32px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
+          className="w-12 h-12 bg-gradient-to-br from-blue-600/90 via-indigo-600/90 to-purple-600/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/20 active:scale-95 transition-transform duration-100 flex items-center justify-center"
+          style={{ boxShadow: '0 4px 16px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
         >
           <svg
-            className="w-8 h-8 sm:w-10 sm:h-10 text-white"
+            className="w-6 h-6 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -178,46 +178,43 @@ export default function MobileControls() {
           </svg>
         </button>
 
-        {/* Center column: Down and Drop */}
-        <div className="flex flex-col gap-3 sm:gap-4">
-          {/* Down button */}
-          <button
-            onTouchStart={(e) => {
-              e.preventDefault();
-              handleButtonPress(moveDown);
-            }}
-            className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-green-600/90 via-emerald-600/90 to-teal-600/90 backdrop-blur-xl rounded-2xl shadow-2xl border-2 border-white/20 active:scale-95 transition-transform duration-100 flex items-center justify-center"
-            style={{ boxShadow: '0 8px 32px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
+        {/* Down button */}
+        <button
+          onTouchStart={(e) => {
+            e.preventDefault();
+            handleButtonPress(moveDown);
+          }}
+          className="w-12 h-12 bg-gradient-to-br from-green-600/90 via-emerald-600/90 to-teal-600/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/20 active:scale-95 transition-transform duration-100 flex items-center justify-center"
+          style={{ boxShadow: '0 4px 16px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
+        >
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-8 h-8 sm:w-10 sm:h-10 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
 
-          {/* Drop button */}
-          <button
-            onTouchStart={(e) => {
-              e.preventDefault();
-              handleButtonPress(drop, [30, 20, 30]);
-            }}
-            className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/90 via-rose-600/90 to-pink-600/90 backdrop-blur-xl rounded-2xl shadow-2xl border-2 border-white/20 active:scale-95 transition-transform duration-100 flex items-center justify-center"
-            style={{ boxShadow: '0 8px 32px rgba(239, 68, 68, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
+        {/* Drop button - Slightly larger */}
+        <button
+          onTouchStart={(e) => {
+            e.preventDefault();
+            handleButtonPress(drop, [30, 20, 30]);
+          }}
+          className="w-14 h-14 bg-gradient-to-br from-red-600/90 via-rose-600/90 to-pink-600/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/20 active:scale-95 transition-transform duration-100 flex items-center justify-center"
+          style={{ boxShadow: '0 4px 16px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
+        >
+          <svg
+            className="w-7 h-7 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-8 h-8 sm:w-10 sm:h-10 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </button>
-        </div>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </button>
 
         {/* Right button */}
         <button
@@ -225,11 +222,11 @@ export default function MobileControls() {
             e.preventDefault();
             handleButtonPress(moveRight);
           }}
-          className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600/90 via-indigo-600/90 to-purple-600/90 backdrop-blur-xl rounded-2xl shadow-2xl border-2 border-white/20 active:scale-95 transition-transform duration-100 flex items-center justify-center"
-          style={{ boxShadow: '0 8px 32px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
+          className="w-12 h-12 bg-gradient-to-br from-blue-600/90 via-indigo-600/90 to-purple-600/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/20 active:scale-95 transition-transform duration-100 flex items-center justify-center"
+          style={{ boxShadow: '0 4px 16px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)' }}
         >
           <svg
-            className="w-8 h-8 sm:w-10 sm:h-10 text-white"
+            className="w-6 h-6 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -239,10 +236,6 @@ export default function MobileControls() {
         </button>
       </div>
 
-      {/* Swipe hint (only show on first game) */}
-      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-lg border border-white/20 text-white text-xs text-center pointer-events-none">
-        Swipe to move • Long press to drop
-      </div>
     </div>
   );
 }
